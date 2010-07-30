@@ -1,7 +1,8 @@
 package main
 
+import "fmt"
 import (
-	"fmt"
+	"go/ast"
 	"go/parser"
 	"opts"
 	"os"
@@ -20,13 +21,23 @@ func main() {
 	}
 	// for each file, list dependencies
 	for _, fname := range opts.Args {
-		fmt.Printf("%s\n",fname)
-		file, _ := parser.ParseFile(fname, nil, nil, parser.ImportsOnly)
+		file, _ := parser.ParseFile(fname, nil, nil, 0)
+		ast.Walk(&Visitor{},file)
 	}
 }
 
 // Show version information
 func ShowVersion() {
 	fmt.Printf("godep v%s\n",version)
+}
+
+type Visitor struct {}
+
+func (v Visitor) Visit(node interface{}) ast.Visitor {
+	// check the type of the node
+	if spec, ok := node.(*ast.ImportSpec); ok {
+		fmt.Printf("importing %s\n",spec.Path.Value)
+	}
+	return v
 }
 

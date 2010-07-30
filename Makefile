@@ -1,12 +1,16 @@
 .PHONY: all clean
 
+include ${GOROOT}/src/Make.${GOARCH}
+
 all: godep
 
-godep: main.6
-	6l -o $@ main.6
+godep: main.${O}
+	${LD} -o $@ main.${O}
 
-main.6: main.go
-	6g -o $@ main.go
+MAINFILES = main.go
+
+main.${O}: ${MAINFILES}
+	${GC} -o $@ ${MAINFILES}
 
 clean:
-	rm godep *.6
+	rm -f godep *.${O}
