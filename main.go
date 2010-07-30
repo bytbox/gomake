@@ -13,6 +13,8 @@ var version = "0.0.1"
 var showVersion = opts.Longflag("version", "display version information")
 
 func main() {
+	opts.Usage("file1.go [...]")
+	opts.Description(`construct and print a dependency tree for the given source files.`)
 	// parse and handle options
 	opts.Parse()
 	if *showVersion {
@@ -21,7 +23,8 @@ func main() {
 	}
 	// for each file, list dependencies
 	for _, fname := range opts.Args {
-		file, _ := parser.ParseFile(fname, nil, nil, 0)
+		file, _ := parser.ParseFile(fname, nil, nil, parser.ImportsOnly)
+		fmt.Printf("%s is in package %s\n", fname, file.Name.Name())
 		ast.Walk(&Visitor{},file)
 	}
 }
