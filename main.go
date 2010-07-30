@@ -1,8 +1,8 @@
 package main
 
-import "fmt"
 import (
 	. "container/vector"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"opts"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var version = "0.0.1"
+var version = "0.6.0"
 
 var showVersion = opts.Longflag("version", "display version information")
 
