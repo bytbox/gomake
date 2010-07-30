@@ -2,18 +2,20 @@
 
 include ${GOROOT}/src/Make.${GOARCH}
 
-all: godep
+all: godep gomake
 
-godep: main.${O}
-	${LD} -o $@ main.${O}
+gomake:
 
-MAINFILES = main.go
+godep: src/godep.${O}
+	${LD} -o $@ src/godep.${O}
 
-main.${O}: ${MAINFILES}
-	${GC} -o $@ ${MAINFILES}
+MAINFILES = src/godep.go
 
-install: godep
+src/godep.${O}: src/godep.go
+	${GC} -o $@ $?
+
+install: godep gomake
 	cp godep ${GOBIN}
 
 clean:
-	rm -f godep *.${O}
+	rm -f godep src/*.${O}
