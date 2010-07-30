@@ -23,7 +23,11 @@ func main() {
 	}
 	// for each file, list dependencies
 	for _, fname := range opts.Args {
-		file, _ := parser.ParseFile(fname, nil, nil, parser.ImportsOnly)
+		file, err := parser.ParseFile(fname, nil, nil, parser.ImportsOnly)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+			os.Exit(1)
+		}
 		fmt.Printf("%s is in package %s\n", fname, file.Name.Name())
 		ast.Walk(&Visitor{},file)
 	}
