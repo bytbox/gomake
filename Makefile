@@ -2,20 +2,24 @@
 
 include ${GOROOT}/src/Make.${GOARCH}
 
-all: godep gomake
+all: godep gomake getgo
 
-gomake:
+gomake: src/gomake.${O}
+	${LD} -o $@ src/gomake.${O}
+
+getgo:
 
 godep: src/godep.${O}
 	${LD} -o $@ src/godep.${O}
 
-MAINFILES = src/godep.go
+src/godep.${O}: src/godep.go src/common.go
+	${GC} -o $@ src/godep.go src/common.go
 
-src/godep.${O}: src/godep.go
-	${GC} -o $@ $?
+src/gomake.${O}: src/gomake.go src/common.go
+	${GC} -o $@ src/gomake.go src/common.go
 
-install: godep gomake
-	cp godep ${GOBIN}
+install: all
+	cp godep gomake ${GOBIN}
 
 clean:
 	rm -f godep src/*.${O}

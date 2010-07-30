@@ -10,9 +10,8 @@ import (
 	"strings"
 )
 
-var version = "0.6.0"
-
 var showVersion = opts.Longflag("version", "display version information")
+var progName = "godep"
 
 func main() {
 	opts.Usage("file1.go [...]")
@@ -33,11 +32,6 @@ func main() {
 		HandleFile(fname, file)
 	}
 	PrintDeps()
-}
-
-// Show version information
-func ShowVersion() {
-	fmt.Printf("godep v%s\n", version)
 }
 
 type Package struct {
