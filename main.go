@@ -37,7 +37,7 @@ func main() {
 
 // Show version information
 func ShowVersion() {
-	fmt.Printf("godep v%s\n",version)
+	fmt.Printf("godep v%s\n", version)
 }
 
 type Package struct {
@@ -77,7 +77,7 @@ func HandleFile(fname string, file *ast.File) {
 		packages[pkgname] = Package{&StringVector{}, &StringVector{}}
 		packages[pkgname].files.Push(fname)
 	}
-	ast.Walk(&Visitor{packages[pkgname]},file)
+	ast.Walk(&Visitor{packages[pkgname]}, file)
 }
 
 type Visitor struct {
@@ -87,7 +87,7 @@ type Visitor struct {
 func (v Visitor) Visit(node interface{}) ast.Visitor {
 	// check the type of the node
 	if spec, ok := node.(*ast.ImportSpec); ok {
-		path := strings.Trim(string(spec.Path.Value),"\"")
+		path := strings.Trim(string(spec.Path.Value), "\"")
 		v.pkg.packages.Push(path)
 	}
 	return v
