@@ -1,4 +1,3 @@
 *.6
-gomake
 golint
 godep
