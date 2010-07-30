@@ -12,5 +12,8 @@ MAINFILES = main.go
 main.${O}: ${MAINFILES}
 	${GC} -o $@ ${MAINFILES}
 
+install: godep
+	cp godep ${GOBIN}
+
 clean:
 	rm -f godep *.${O}
