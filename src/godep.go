@@ -7,6 +7,7 @@ import (
 	"go/parser"
 	"opts"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -14,9 +15,21 @@ var showVersion = opts.Longflag("version", "display version information")
 var progName = "godep"
 
 var roots = map[string] string{}
+var files = StringVector{}
+
+type GoFileFinder struct {}
+func (f GoFileFinder) VisitDir(path string, finfo *os.FileInfo) bool {
+	return true
+}
+
+func (f GoFileFinder) VisitFile(fpath string, finfo *os.FileInfo) {
+	if path.Ext(fpath) == ".go" {
+		files.Push(fpath)
+	}
+}
 
 func main() {
-	opts.Usage("file1.go [...]")
+	opts.Usage("[file1.go [...]]")
 	opts.Description(`construct and print a dependency tree for the given source files.`)
 	// parse and handle options
 	opts.Parse()
@@ -24,8 +37,16 @@ func main() {
 		ShowVersion()
 		os.Exit(0)
 	}
+	// if there are no files, generate a list
+	if len(opts.Args) == 0 {
+		path.Walk(".",GoFileFinder{}, nil)
+	} else {
+		for _, fname := range opts.Args {
+			files.Push(fname)
+		}
+	}
 	// for each file, list dependencies
-	for _, fname := range opts.Args {
+	for _, fname := range files {
 		file, err := parser.ParseFile(fname, nil, nil, parser.ImportsOnly)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
