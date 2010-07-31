@@ -25,8 +25,8 @@ func main() {
 		ShowVersion()
 		os.Exit(0)
 	}
-	// read from the configuration file, if any (discard the error)
-	config, _ = ReadConfig(*configFilename)
+	// read the configuration
+	readConfig()
 	// for each file, list dependencies
 	for _, fname := range opts.Args {
 		file, err := parser.ParseFile(fname, nil, nil, parser.ImportsOnly)
@@ -37,6 +37,26 @@ func main() {
 		HandleFile(fname, file)
 	}
 	PrintDeps()
+}
+
+var roots = map[string]string{}
+
+func readConfig() {
+	// read from the configuration file, if any (discard the error)
+	config, _ = ReadConfig(*configFilename)
+	rootstr, ok := config["roots"]
+	if !ok {
+		return
+	}
+	// extract the roots
+	rootlist := strings.Split(rootstr, " ", -1)
+	for _, root := range rootlist {
+		kv := strings.Split(strings.Trim(root, " "),
+			":", 2)
+		if len(kv) == 2 {
+			roots[kv[1]] = kv[0]
+		}
+	}
 }
 
 type Package struct {
@@ -52,19 +72,43 @@ var packages = map[string]Package{}
 func PrintDeps() {
 	// for each package
 	for pkgname, pkg := range packages {
-		// start the list
-		fmt.Printf("%s.${O}: ", pkgname)
-		// print all the files
-		for _, fname := range *pkg.files {
-			fmt.Printf("%s ", fname)
+		if pkgname != "main" {
+			// start the list
+			fmt.Printf("%s.${O}: ", pkgname)
+			// print all the files
+			for _, fname := range *pkg.files {
+				fmt.Printf("%s ", fname)
+			}
+			// print all packages for which we have the source
+			for _, pkgname := range *pkg.packages {
+				if _, ok := packages[pkgname]; ok {
+					fmt.Printf("%s.${O} ", pkgname)
+				}
+			}
+			fmt.Printf("\n")
 		}
-		// print all packages for which we have the source
-		for _, pkgname := range *pkg.packages {
-			if _, ok := packages[pkgname]; ok {
-				fmt.Printf("%s.${O} ", pkgname)
+	}
+	common := StringVector{}
+	// for the main package
+	if main, ok := packages["main"]; ok {
+		// consider all files not found in 'roots' to be common to 
+		// everything in this package
+		for _, fname := range *main.files {
+			if app, ok := roots[fname]; ok {
+				fmt.Printf("%s: %s.${O}\n", app, app)
+			} else {
+				common.Push(fname)
 			}
 		}
-		fmt.Printf("\n")
+		for _, fname := range *main.files {
+			if app, ok := roots[fname]; ok {
+				fmt.Printf("%s.${O}: %s ", app, fname)
+				for _, cfile := range common {
+					fmt.Printf("%s ",cfile)
+				}
+				fmt.Printf("\n")
+			}
+		}
 	}
 }
 

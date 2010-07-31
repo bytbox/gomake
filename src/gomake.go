@@ -8,6 +8,7 @@ import (
 var progName = "gomake"
 
 var showVersion = opts.Longflag("version", "display version information")
+var outputFilename = opts.Shortopt("o", "file to write makefile to", "Makefile")
 
 func main() {
 	// parse and handle options

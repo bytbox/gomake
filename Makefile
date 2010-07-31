@@ -19,7 +19,7 @@ src/gomake.${O}: src/gomake.go src/common.go
 	${GC} -o $@ src/gomake.go src/common.go
 
 install: all
-	cp godep gomake ${GOBIN}
+	cp godep gomake getgo ${GOBIN}
 
 clean:
-	rm -f godep src/*.${O}
+	rm -f godep gomake getgo src/*.${O}
