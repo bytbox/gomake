@@ -18,7 +18,7 @@ func ReadConfig(filename string) (map[string]string, os.Error) {
 	config := map[string]string{}
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return nil, err
+		return config, err
 	}
 	lines := strings.Split(string(content), "\n", -1)
 	for _, line := range lines {
