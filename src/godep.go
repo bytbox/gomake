@@ -11,10 +11,9 @@ import (
 )
 
 var showVersion = opts.Longflag("version", "display version information")
-var configFilename = opts.Longopt("config", 
-	"name of configuration file", "godep.cfg")
 var progName = "godep"
-var config map[string]string
+
+var roots = map[string] string{}
 
 func main() {
 	opts.Usage("file1.go [...]")
@@ -25,8 +24,6 @@ func main() {
 		ShowVersion()
 		os.Exit(0)
 	}
-	// read the configuration
-	readConfig()
 	// for each file, list dependencies
 	for _, fname := range opts.Args {
 		file, err := parser.ParseFile(fname, nil, nil, parser.ImportsOnly)
@@ -36,37 +33,27 @@ func main() {
 		}
 		HandleFile(fname, file)
 	}
+	FindMain()
 	PrintDeps()
 }
 
-var roots = map[string]string{}
-
-func readConfig() {
-	// read from the configuration file, if any (discard the error)
-	config, _ = ReadConfig(*configFilename)
-	rootstr, ok := config["roots"]
-	if !ok {
-		return
-	}
-	// extract the roots
-	rootlist := strings.Split(rootstr, " ", -1)
-	for _, root := range rootlist {
-		kv := strings.Split(strings.Trim(root, " "),
-			":", 2)
-		if len(kv) == 2 {
-			roots[kv[1]] = kv[0]
-		}
-	}
-}
-
 type Package struct {
-	// The files on which this package depends.
 	files *StringVector
-	// The packages on which this package depends.
 	packages *StringVector
+	hasMain bool
 }
 
 var packages = map[string]Package{}
+
+func FindMain() {
+	// for each file in the main package
+	if pkg, ok := packages["main"]; ok {
+		for _, fname := range *pkg.files {
+			file, _ := parser.ParseFile(fname, nil, nil, 0)
+			ast.Walk(&MainCheckVisitor{fname},file)
+		}
+	}
+}
 
 // PrintDeps prints out the dependency lists to standard output.
 func PrintDeps() {
@@ -117,21 +104,40 @@ func HandleFile(fname string, file *ast.File) {
 	if pkg, ok := packages[pkgname]; ok {
 		pkg.files.Push(fname)
 	} else {
-		packages[pkgname] = Package{&StringVector{}, &StringVector{}}
+		packages[pkgname] = Package{&StringVector{}, &StringVector{}, false}
 		packages[pkgname].files.Push(fname)
 	}
-	ast.Walk(&Visitor{packages[pkgname]}, file)
+	ast.Walk(&ImportVisitor{packages[pkgname]}, file)
 }
 
-type Visitor struct {
+type ImportVisitor struct {
 	pkg Package
 }
 
-func (v Visitor) Visit(node interface{}) ast.Visitor {
+func (v ImportVisitor) Visit(node interface{}) ast.Visitor {
 	// check the type of the node
 	if spec, ok := node.(*ast.ImportSpec); ok {
 		path := strings.Trim(string(spec.Path.Value), "\"")
 		v.pkg.packages.Push(path)
+	}
+	return v
+}
+
+type MainCheckVisitor struct {
+	fname string
+}
+
+func addRoot(filename string) {
+	fparts := strings.Split(filename, ".", -1)
+	basename := fparts[0]
+	roots[filename] = basename
+}
+
+func (v MainCheckVisitor) Visit(node interface{}) ast.Visitor {
+	if decl, ok := node.(*ast.FuncDecl); ok {
+		if decl.Name.Name() == "main" {
+			addRoot(v.fname)
+		}
 	}
 	return v
 }
