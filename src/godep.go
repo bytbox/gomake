@@ -11,7 +11,10 @@ import (
 )
 
 var showVersion = opts.Longflag("version", "display version information")
+var configFilename = opts.Longopt("config", 
+	"name of configuration file", "godep.cfg")
 var progName = "godep"
+var config map[string]string
 
 func main() {
 	opts.Usage("file1.go [...]")
@@ -22,6 +25,8 @@ func main() {
 		ShowVersion()
 		os.Exit(0)
 	}
+	// read from the configuration file, if any (discard the error)
+	config, _ = ReadConfig(*configFilename)
 	// for each file, list dependencies
 	for _, fname := range opts.Args {
 		file, err := parser.ParseFile(fname, nil, nil, parser.ImportsOnly)
