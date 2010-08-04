@@ -1,6 +1,7 @@
 package main
 
 import (
+	"exec"
 	"opts"
 	"os"
 )
@@ -16,5 +17,10 @@ func main() {
 	if *showVersion {
 		ShowVersion()
 		os.Exit(0)
+	}
+	// if any arguments were given, this is being used as 'make'
+	if len(opts.Args) > 0 {
+		make, _ := exec.LookPath("make")
+		os.Exec(make,os.Args,nil)
 	}
 }
