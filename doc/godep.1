@@ -5,7 +5,20 @@ godep \- dependency resolver for golang
 .B godep
 [\fIoptions\fR] [\fISOURCEFILE [...]\fR]
 .SH DESCRIPTION
-Description of \fBgodep\fR goes here.
+Create from the specified golang source files, or (if no arguments are given)
+all golang source files in the current directory, a dependency tree for use
+in makefiles.
+
+The dependency tree output by \fBgodep\fR may be include'd into a makefile, 
+or further processed by \fBgomake\fR(1) to yield a complete working makefile.
+
+If no arguments are given, \fBgodep\fR will search the current directory for
+all files with an extension of ".go", and assume them to be go source files.
+The output of \fBgodep\fR assumes that the \fIO\fR has been set within the
+Makefile.
+
+Note that \fBgodep\fR will only resolve dependencies within a project.
+
 .SH OPTIONS
 .TP
 \fB\-\-version\fR
