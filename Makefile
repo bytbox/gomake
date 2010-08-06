@@ -5,7 +5,7 @@ include ${GOROOT}/src/Make.${GOARCH}
 all: godep gomake getgo
 
 getgo: src/getgo.${O}
-	${LD} -o $@ src/gomake.${O}
+	${LD} -o $@ src/getgo.${O}
 
 gomake: src/gomake.${O}
 	${LD} -o $@ src/gomake.${O}
