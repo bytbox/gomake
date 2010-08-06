@@ -11,7 +11,7 @@ source files. This dependency tree is formatted for inclusion into a makefile.
 Dependencies
 ------------
 
-Godep uses opts for option parsing, available here:
+All gomake programs use opts for option parsing, available here:
 <http://github.com/bytbox/opts>.
 
 
