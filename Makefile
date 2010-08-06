@@ -24,6 +24,7 @@ src/gomake.${O}: src/gomake.go src/common.go
 
 install: all
 	cp godep gomake ${GOBIN}
+	cp doc/*.1 /usr/local/share/man/man1
 
 clean:
 	rm -f godep gomake getgo src/*.${O}
