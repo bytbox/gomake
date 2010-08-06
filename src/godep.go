@@ -117,7 +117,7 @@ func PrintDeps() {
 			// print all packages for which we have the source
 			// exception: if -n was supplied, print all packages
 			for _, pkgname := range *pkg.packages {
-				_, ok := packages[pkgname]; 
+				_, ok := packages[pkgname]
 				if ok || *showNeeded {
 					fmt.Printf("%s.${O} ", pkgname)
 				}
@@ -139,9 +139,22 @@ func PrintDeps() {
 		}
 		for _, fname := range *main.files {
 			if app, ok := roots[fname]; ok {
+				// dependencies already displayed
+				done := map[string]bool{}
+				// print the file
 				fmt.Printf("%s.${O}: %s ", app, fname)
+				// print the common files
 				for _, cfile := range common {
 					fmt.Printf("%s ",cfile)
+				}
+				// print all packages for which we have the
+				// source, or, if -n was supplied, print all
+				for _, pkgname := range *main.packages {
+					_, ok := packages[pkgname] 
+					if ok || (*showNeeded && !done[pkgname]) {
+						fmt.Printf("%s.${O} ", pkgname)
+						done[pkgname] = true
+					}
 				}
 				fmt.Printf("\n")
 			}
