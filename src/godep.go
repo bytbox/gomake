@@ -16,6 +16,7 @@ import (
 )
 
 var showVersion = opts.Longflag("version", "display version information")
+var showNeeded = opts.Flag("n","need", "display external dependencies")
 var progName = "godep"
 
 var roots = map[string] string{}
@@ -59,6 +60,9 @@ func main() {
 		HandleFile(fname, file)
 	}
 	FindMain()
+	if *showNeeded {
+		PrintNeeded()
+	}
 	PrintDeps()
 }
 
@@ -80,6 +84,25 @@ func FindMain() {
 	}
 }
 
+// PrintNeeded prints out a list of external dependencies to standard output.
+func PrintNeeded() {
+	// dependencies already displayed
+	done := map[string]bool{}
+	// start the list
+	fmt.Printf(".EXTERNAL: ")
+	// for each package
+	for _, pkg := range packages {
+		// print all packages for which we don't have the source
+		for _, pkgname := range *pkg.packages {
+			if _, ok := packages[pkgname]; !ok && !done[pkgname] {
+				fmt.Printf("%s.${O} ", pkgname)
+				done[pkgname] = true
+			}
+		}
+	}
+	fmt.Printf("\n")
+}
+
 // PrintDeps prints out the dependency lists to standard output.
 func PrintDeps() {
 	// for each package
@@ -92,8 +115,10 @@ func PrintDeps() {
 				fmt.Printf("%s ", fname)
 			}
 			// print all packages for which we have the source
+			// exception: if -n was supplied, print all packages
 			for _, pkgname := range *pkg.packages {
-				if _, ok := packages[pkgname]; ok {
+				_, ok := packages[pkgname]; 
+				if ok || *showNeeded {
 					fmt.Printf("%s.${O} ", pkgname)
 				}
 			}
