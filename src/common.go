@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-var version = "0.2.0"
+var version = "0.2.1"
 
 // Show version information
 func ShowVersion() {
@@ -28,7 +28,7 @@ func ReadConfig(filename string) (map[string]string, os.Error) {
 	for _, line := range lines {
 		parts := strings.Split(string(line), "=", 2)
 		if len(parts) == 2 {
-			key, value := strings.Trim(parts[0], " "), 
+			key, value := strings.Trim(parts[0], " "),
 				strings.Trim(parts[1], " ")
 			config[key] = value
 		}

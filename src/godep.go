@@ -16,13 +16,14 @@ import (
 )
 
 var showVersion = opts.Longflag("version", "display version information")
-var showNeeded = opts.Flag("n","need", "display external dependencies")
+var showNeeded = opts.Flag("n", "need", "display external dependencies")
 var progName = "godep"
 
-var roots = map[string] string{}
+var roots = map[string]string{}
 var files = StringVector{}
 
-type GoFileFinder struct {}
+type GoFileFinder struct{}
+
 func (f GoFileFinder) VisitDir(path string, finfo *os.FileInfo) bool {
 	return true
 }
@@ -44,7 +45,7 @@ func main() {
 	}
 	// if there are no files, generate a list
 	if len(opts.Args) == 0 {
-		path.Walk(".",GoFileFinder{}, nil)
+		path.Walk(".", GoFileFinder{}, nil)
 	} else {
 		for _, fname := range opts.Args {
 			files.Push(fname)
@@ -67,9 +68,9 @@ func main() {
 }
 
 type Package struct {
-	files *StringVector
+	files    *StringVector
 	packages *StringVector
-	hasMain bool
+	hasMain  bool
 }
 
 var packages = map[string]Package{}
@@ -79,7 +80,7 @@ func FindMain() {
 	if pkg, ok := packages["main"]; ok {
 		for _, fname := range *pkg.files {
 			file, _ := parser.ParseFile(fname, nil, nil, 0)
-			ast.Walk(&MainCheckVisitor{fname},file)
+			ast.Walk(&MainCheckVisitor{fname}, file)
 		}
 	}
 }
@@ -128,7 +129,7 @@ func PrintDeps() {
 	common := StringVector{}
 	// for the main package
 	if main, ok := packages["main"]; ok {
-		// consider all files not found in 'roots' to be common to 
+		// consider all files not found in 'roots' to be common to
 		// everything in this package
 		for _, fname := range *main.files {
 			if app, ok := roots[fname]; ok {
@@ -145,12 +146,12 @@ func PrintDeps() {
 				fmt.Printf("%s.${O}: %s ", app, fname)
 				// print the common files
 				for _, cfile := range common {
-					fmt.Printf("%s ",cfile)
+					fmt.Printf("%s ", cfile)
 				}
 				// print all packages for which we have the
 				// source, or, if -n was supplied, print all
 				for _, pkgname := range *main.packages {
-					_, ok := packages[pkgname] 
+					_, ok := packages[pkgname]
 					if ok || (*showNeeded && !done[pkgname]) {
 						fmt.Printf("%s.${O} ", pkgname)
 						done[pkgname] = true

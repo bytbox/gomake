@@ -25,7 +25,7 @@ func main() {
 	}
 	if asMake {
 		make, _ := exec.LookPath("make")
-		os.Exec(make,os.Args,nil)
+		os.Exec(make, os.Args, nil)
 	}
 	// parse and handle options
 	opts.Parse()
