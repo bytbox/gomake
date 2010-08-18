@@ -11,7 +11,7 @@ import (
 
 var progName = "getgo"
 
-var showVersion = opts.Longflag("version", "display version information")
+var showVersion = opts.LongFlag("version", "display version information")
 
 func main() {
 	// parse and handle options

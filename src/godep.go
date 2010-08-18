@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-var showVersion = opts.Longflag("version", "display version information")
+var showVersion = opts.LongFlag("version", "display version information")
 var showNeeded = opts.Flag("n", "need", "display external dependencies")
 var progName = "godep"
 
@@ -35,9 +35,10 @@ func (f GoFileFinder) VisitFile(fpath string, finfo *os.FileInfo) {
 }
 
 func main() {
-	opts.Usage("[file1.go [...]]")
-	opts.Description(`construct and print a dependency tree for the given source files.`)
-	// parse and handle options
+	opts.Usage = "[file1.go [...]]"
+	opts.Description =
+		`construct and print a dependency tree for the given source files.`
+		// parse and handle options
 	opts.Parse()
 	if *showVersion {
 		ShowVersion()
@@ -53,7 +54,7 @@ func main() {
 	}
 	// for each file, list dependencies
 	for _, fname := range files {
-		file, err := parser.ParseFile(fname, nil, nil, parser.ImportsOnly)
+		file, err := parser.ParseFile(fname, nil, parser.ImportsOnly)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
 			os.Exit(1)
@@ -69,7 +70,7 @@ func main() {
 
 type Package struct {
 	files    *StringVector
-	packages *StringVector
+	packages map[string]string
 	hasMain  bool
 }
 
@@ -79,7 +80,7 @@ func FindMain() {
 	// for each file in the main package
 	if pkg, ok := packages["main"]; ok {
 		for _, fname := range *pkg.files {
-			file, _ := parser.ParseFile(fname, nil, nil, 0)
+			file, _ := parser.ParseFile(fname, nil, 0)
 			ast.Walk(&MainCheckVisitor{fname}, file)
 		}
 	}
@@ -94,7 +95,7 @@ func PrintNeeded() {
 	// for each package
 	for _, pkg := range packages {
 		// print all packages for which we don't have the source
-		for _, pkgname := range *pkg.packages {
+		for _, pkgname := range pkg.packages {
 			if _, ok := packages[pkgname]; !ok && !done[pkgname] {
 				fmt.Printf("%s.${O} ", pkgname)
 				done[pkgname] = true
@@ -117,7 +118,7 @@ func PrintDeps() {
 			}
 			// print all packages for which we have the source
 			// exception: if -n was supplied, print all packages
-			for _, pkgname := range *pkg.packages {
+			for _, pkgname := range pkg.packages {
 				_, ok := packages[pkgname]
 				if ok || *showNeeded {
 					fmt.Printf("%s.${O} ", pkgname)
@@ -150,7 +151,7 @@ func PrintDeps() {
 				}
 				// print all packages for which we have the
 				// source, or, if -n was supplied, print all
-				for _, pkgname := range *main.packages {
+				for _, pkgname := range main.packages {
 					_, ok := packages[pkgname]
 					if ok || (*showNeeded && !done[pkgname]) {
 						fmt.Printf("%s.${O} ", pkgname)
@@ -164,11 +165,11 @@ func PrintDeps() {
 }
 
 func HandleFile(fname string, file *ast.File) {
-	pkgname := file.Name.Name()
+	pkgname := file.Name.Name
 	if pkg, ok := packages[pkgname]; ok {
 		pkg.files.Push(fname)
 	} else {
-		packages[pkgname] = Package{&StringVector{}, &StringVector{}, false}
+		packages[pkgname] = Package{&StringVector{}, map[string]string{}, false}
 		packages[pkgname].files.Push(fname)
 	}
 	ast.Walk(&ImportVisitor{packages[pkgname]}, file)
@@ -181,8 +182,10 @@ type ImportVisitor struct {
 func (v ImportVisitor) Visit(node interface{}) ast.Visitor {
 	// check the type of the node
 	if spec, ok := node.(*ast.ImportSpec); ok {
-		path := strings.Trim(string(spec.Path.Value), "\"")
-		v.pkg.packages.Push(path)
+		ppath := path.Clean(strings.Trim(string(spec.Path.Value), "\""))
+		if _, ok = v.pkg.packages[ppath]; !ok {
+			v.pkg.packages[ppath]=ppath
+		}
 	}
 	return v
 }
@@ -199,7 +202,7 @@ func addRoot(filename string) {
 
 func (v MainCheckVisitor) Visit(node interface{}) ast.Visitor {
 	if decl, ok := node.(*ast.FuncDecl); ok {
-		if decl.Name.Name() == "main" {
+		if decl.Name.Name == "main" {
 			addRoot(v.fname)
 		}
 	}
