@@ -5,7 +5,6 @@
 package main
 
 import (
-	"exec"
 	"opts"
 	"os"
 )
