@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"opts"
 	"os"
 )
@@ -22,4 +23,8 @@ func main() {
 		ShowVersion()
 		os.Exit(0)
 	}
+	fmt.Print(
+`
+
+`)
 }
