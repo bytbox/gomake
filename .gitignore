@@ -3,3 +3,4 @@ golint
 godep
 gomake
 getgo
+gorules
