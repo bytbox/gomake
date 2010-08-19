@@ -63,8 +63,10 @@ func main() {
 	}
 	FindMain()
 	if *showNeeded {
-		PrintNeeded()
+		PrintNeeded(".EXTERNAL: ", ".${O}")
 	}
+	// in any case, print as a comment
+	PrintNeeded("# external packages: ", "")
 	PrintDeps()
 }
 
@@ -87,17 +89,17 @@ func FindMain() {
 }
 
 // PrintNeeded prints out a list of external dependencies to standard output.
-func PrintNeeded() {
+func PrintNeeded(pre, ppost string) {
 	// dependencies already displayed
 	done := map[string]bool{}
 	// start the list
-	fmt.Printf(".EXTERNAL: ")
+	fmt.Print(pre)
 	// for each package
 	for _, pkg := range packages {
 		// print all packages for which we don't have the source
 		for _, pkgname := range pkg.packages {
 			if _, ok := packages[pkgname]; !ok && !done[pkgname] {
-				fmt.Printf("%s.${O} ", pkgname)
+				fmt.Printf("%s%s ", pkgname, ppost)
 				done[pkgname] = true
 			}
 		}
