@@ -5,8 +5,10 @@
 package main
 
 import (
+	"fmt"
 	"opts"
 	"os"
+	"path"
 )
 
 var progName = "goinfo"
@@ -20,4 +22,21 @@ func main() {
 		ShowVersion()
 		os.Exit(0)
 	}
+	// if there are no files, generate a list
+	if len(opts.Args) == 0 {
+		path.Walk(".", GoFileFinder{}, nil)
+	} else {
+		for _, fname := range opts.Args {
+			files.Push(fname)
+		}
+	}
+	PrintFList()
+}
+
+func PrintFList() {
+	fmt.Printf("GOFILES = ")
+	for _, fname := range files {
+		fmt.Print(fname+" ")
+	}
+	fmt.Print("\n")
 }

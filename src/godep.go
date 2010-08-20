@@ -54,8 +54,6 @@ func main() {
 	}
 	// in any case, print as a comment
 	PrintNeeded("# external packages: ", "")
-	// list of all files
-	PrintFList()
 	PrintDeps()
 }
 
@@ -94,23 +92,6 @@ func PrintNeeded(pre, ppost string) {
 		}
 	}
 	fmt.Print("\n")
-}
-
-func PrintFList() {
-	// files already displayed
-	done := map[string]bool{}
-	fmt.Print("GOFILES = ")
-	// for each package
-	for _, pkg := range packages {
-		// print all files we haven't already printed
-		for _, fname := range *pkg.files {
-			if d := done[fname]; !d {
-				fmt.Printf("%s ", fname)
-				done[fname] = true
-			}
-		}
-	}
-	fmt.Printf("\n")
 }
 
 // PrintDeps prints out the dependency lists to standard output.
