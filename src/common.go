@@ -5,9 +5,11 @@
 package main
 
 import (
+	. "container/vector"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -34,4 +36,17 @@ func ReadConfig(filename string) (map[string]string, os.Error) {
 		}
 	}
 	return config, err
+}
+
+var files = StringVector{}
+type GoFileFinder struct{}
+
+func (f GoFileFinder) VisitDir(path string, finfo *os.FileInfo) bool {
+	return true
+}
+
+func (f GoFileFinder) VisitFile(fpath string, finfo *os.FileInfo) {
+	if path.Ext(fpath) == ".go" {
+		files.Push(fpath)
+	}
 }

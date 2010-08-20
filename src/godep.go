@@ -20,19 +20,6 @@ var showNeeded = opts.Flag("n", "need", "display external dependencies")
 var progName = "godep"
 
 var roots = map[string]string{}
-var files = StringVector{}
-
-type GoFileFinder struct{}
-
-func (f GoFileFinder) VisitDir(path string, finfo *os.FileInfo) bool {
-	return true
-}
-
-func (f GoFileFinder) VisitFile(fpath string, finfo *os.FileInfo) {
-	if path.Ext(fpath) == ".go" {
-		files.Push(fpath)
-	}
-}
 
 func main() {
 	opts.Usage = "[file1.go [...]]"
