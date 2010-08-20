@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-var version = "0.2.2"
+var version = "0.2.3"
 
 // Show version information
 func ShowVersion() {
