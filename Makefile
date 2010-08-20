@@ -29,7 +29,7 @@ src/goinfo.${O}: src/goinfo.go src/common.go
 	${GC} -o $@ src/goinfo.go src/common.go
 
 install: all
-	cp godep gomake gorules ${GOBIN}
+	cp godep gomake gorules goinfo ${GOBIN}
 	cp doc/*.1 /usr/local/share/man/man1
 
 format:
