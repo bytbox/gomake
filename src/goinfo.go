@@ -33,6 +33,7 @@ func main() {
 	PrintFList()
 }
 
+// Print list of files
 func PrintFList() {
 	fmt.Printf("GOFILES = ")
 	for _, fname := range files {
