@@ -100,7 +100,7 @@ func PrintDeps() {
 	for pkgname, pkg := range packages {
 		if pkgname != "main" {
 			// start the list
-			fmt.Printf("%s.${O}: ", pkgname)
+			fmt.Printf("%s.a: ", pkgname)
 			// print all the files
 			for _, fname := range *pkg.files {
 				fmt.Printf("%s ", fname)
