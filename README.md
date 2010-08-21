@@ -8,6 +8,12 @@ Godep is a simple program to generate a dependency tree from a set of go
 source files. This dependency tree is formatted for inclusion into a makefile.
 
 
+About goinfo
+------------
+Goinfo discovers meta-information about the project, and prints it in a
+Makefile-compatible format.
+
+
 Dependencies
 ------------
 
