@@ -50,7 +50,7 @@ func main() {
 	}
 	FindMain()
 	if *showNeeded {
-		PrintNeeded(".EXTERNAL: ", ".${O}")
+		PrintNeeded(".EXTERNAL: ", ".a")
 	}
 	// in any case, print as a comment
 	PrintNeeded("# external packages: ", "")
@@ -110,7 +110,7 @@ func PrintDeps() {
 			for _, pkgname := range pkg.packages {
 				_, ok := packages[pkgname]
 				if ok || *showNeeded {
-					fmt.Printf("%s.${O} ", pkgname)
+					fmt.Printf("%s.a ", pkgname)
 				}
 			}
 			fmt.Printf("\n")
@@ -143,7 +143,7 @@ func PrintDeps() {
 				for _, pkgname := range main.packages {
 					_, ok := packages[pkgname]
 					if ok || (*showNeeded && !done[pkgname]) {
-						fmt.Printf("%s.${O} ", pkgname)
+						fmt.Printf("%s.a ", pkgname)
 						done[pkgname] = true
 					}
 				}
