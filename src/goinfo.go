@@ -31,6 +31,7 @@ func main() {
 		}
 	}
 	PrintFList()
+	PrintPList()
 }
 
 // Print list of files
@@ -40,4 +41,8 @@ func PrintFList() {
 		fmt.Print(fname+" ")
 	}
 	fmt.Print("\n")
+}
+
+// Print list of packages
+func PrintPList() {
 }
