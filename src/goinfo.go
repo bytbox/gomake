@@ -6,9 +6,12 @@ package main
 
 import (
 	"fmt"
+	"go/ast"
+	"go/parser"
 	"opts"
 	"os"
 	"path"
+	"strings"
 )
 
 var progName = "goinfo"
@@ -30,6 +33,7 @@ func main() {
 			files.Push(fname)
 		}
 	}
+	GetPackageList()
 	PrintFList()
 	PrintPList()
 }
@@ -43,6 +47,56 @@ func PrintFList() {
 	fmt.Print("\n")
 }
 
+var packages = map[string]*struct{}{}
+
+func GetPackageList() {
+	for _, fname := range files {
+		file, err := parser.ParseFile(fname, nil, parser.PackageClauseOnly)
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+			os.Exit(1)
+		}
+		pname := file.Name.Name
+		if pname == "main" {
+			fullfile, err := parser.ParseFile(fname, nil, 0)
+			if err == nil {
+				v := &MainCheckVisitor{fname: fname}
+				ast.Walk(v, fullfile)
+				if v.hasMain {
+					// get the name from the filename
+					fparts := strings.Split(fname, ".", -1)
+					basename := fparts[0]
+					packages[basename] = nil
+				} else {
+					packages[pname] = nil
+				}
+			}
+		} else {
+			packages[file.Name.Name] = nil
+		}
+	}
+}
+
+type MainCheckVisitor struct {
+	fname string
+	hasMain bool
+}
+
+func (v *MainCheckVisitor) Visit(node interface{}) ast.Visitor {
+	if decl, ok := node.(*ast.FuncDecl); ok {
+		if decl.Name.Name == "main" {
+			v.hasMain = true
+		}
+	}
+	return v
+}
+
 // Print list of packages
 func PrintPList() {
+	fmt.Print("GOPKGS = ")
+	for pname, _ := range packages {
+		fmt.Printf("%s ",pname)
+	}
+	fmt.Print("\n")
 }
+
