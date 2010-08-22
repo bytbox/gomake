@@ -36,6 +36,8 @@ func main() {
 	GetPackageList()
 	PrintFList()
 	PrintPList()
+	fmt.Println("GOPACKAGES = ${GOPKGS:=.${O}}")
+	fmt.Println("GOARCHIVES = ${GOPKGS:=.a}")
 }
 
 // Print list of files
