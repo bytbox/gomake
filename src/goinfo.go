@@ -34,6 +34,7 @@ func main() {
 		}
 	}
 	GetPackageList()
+	PrintAutoNotice()
 	PrintFList()
 	PrintPList()
 	fmt.Println("GOPACKAGES = ${GOPKGS:=.${O}}")

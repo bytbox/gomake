@@ -23,6 +23,7 @@ func main() {
 		ShowVersion()
 		os.Exit(0)
 	}
+	PrintAutoNotice()
 	fmt.Print(
 `
 .go.${O}:

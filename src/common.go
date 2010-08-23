@@ -50,3 +50,7 @@ func (f GoFileFinder) VisitFile(fpath string, finfo *os.FileInfo) {
 		files.Push(fpath)
 	}
 }
+
+func PrintAutoNotice() {
+	fmt.Print("# Auto-generated - DO NOT MODIFY\n")
+}

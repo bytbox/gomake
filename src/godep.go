@@ -48,6 +48,7 @@ func main() {
 		}
 		HandleFile(fname, file)
 	}
+	PrintAutoNotice()
 	FindMain()
 	if *showNeeded {
 		PrintNeeded(".EXTERNAL: ", ".a")
