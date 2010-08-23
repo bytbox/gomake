@@ -67,6 +67,8 @@ type Package struct {
 // packages is a mapping of package names (strings) to Package objects
 var packages = map[string]Package{}
 
+// FindMain finds all files which are in package 'main' and have a 'main'
+// function.
 func FindMain() {
 	// for each file in the main package
 	if pkg, ok := packages["main"]; ok {
