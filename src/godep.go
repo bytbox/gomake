@@ -64,6 +64,7 @@ type Package struct {
 	hasMain  bool
 }
 
+// packages is a mapping of package names (strings) to Package objects
 var packages = map[string]Package{}
 
 func FindMain() {
@@ -165,6 +166,12 @@ func HandleFile(fname string, file *ast.File) {
 	ast.Walk(&ImportVisitor{packages[pkgname]}, file)
 }
 
+//
+// ImportVisitor
+//
+// Finds a lists all imports for the scanned file.
+//
+
 type ImportVisitor struct {
 	pkg Package
 }
@@ -179,6 +186,13 @@ func (v ImportVisitor) Visit(node interface{}) ast.Visitor {
 	}
 	return v
 }
+
+//
+// MainCheckVisitor
+//
+// Used to check for a function named 'main' (usually in a package named 
+// 'main'), to decide if a package should be made into its own executable.
+//
 
 type MainCheckVisitor struct {
 	fname string
