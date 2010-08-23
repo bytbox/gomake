@@ -25,6 +25,13 @@ func main() {
 	}
 	fmt.Print(
 `
+.go.${O}:
+        ${GC} $*.go
 
+.go.a:
+        ${GC} -o $*.${O} $*.go && gopack grc $*.a $*.${O}
+
+format:
+        gofmt -w ${GOFILES}
 `)
 }
