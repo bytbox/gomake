@@ -18,6 +18,12 @@ var version = "0.2.3"
 // Show version information
 func ShowVersion() {
 	fmt.Printf("%s (GoMake) v%s\n", progName, version)
+	fmt.Print(
+`
+Copyright 2010 The Go Authors. All rights reserved.
+Use is governed by a BSD-style license that can be found in 
+the LICENSE file, or online at http://golang.org/LICENSE.
+`)
 }
 
 func ReadConfig(filename string) (map[string]string, os.Error) {
