@@ -19,6 +19,11 @@ var progName = "goinfo"
 var showVersion = opts.LongFlag("version", "display version information")
 var srcRoot = opts.Half("r", "root", "root directory of the source", "", "src")
 
+// prefix the root
+func mkRoot(str string) string {
+	return path.Join(*srcRoot, str)
+}
+
 func main() {
 	// parse and handle options
 	opts.Parse()
@@ -69,7 +74,7 @@ func GetPackageList() {
 				if v.hasMain {
 					// get the name from the filename
 					fparts := strings.Split(fname, ".", -1)
-					basename := fparts[0]
+					basename := path.Base(fparts[0])
 					packages[basename] = nil
 				} else {
 					packages[pname] = nil
@@ -99,7 +104,7 @@ func (v *MainCheckVisitor) Visit(node interface{}) ast.Visitor {
 func PrintPList() {
 	fmt.Print("GOPKGS = ")
 	for pname, _ := range packages {
-		fmt.Printf("%s ", pname)
+		fmt.Printf("%s ", mkRoot(pname))
 	}
 	fmt.Print("\n")
 }
