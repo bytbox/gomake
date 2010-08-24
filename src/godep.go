@@ -17,10 +17,15 @@ import (
 
 var showVersion = opts.LongFlag("version", "display version information")
 var showNeeded = opts.Flag("n", "need", "display external dependencies")
-var srcRoot = opts.Half("r", "root", "root directory of the source", ".", "src")
+var srcRoot = opts.Half("r", "root", "root directory of the source", "", "src")
 var progName = "godep"
 
 var roots = map[string]string{}
+
+// prefix the root
+func mkRoot(str string) string {
+	return path.Join(*srcRoot, str)
+}
 
 func main() {
 	opts.Usage = "[file1.go [...]]"
@@ -107,7 +112,7 @@ func PrintDeps() {
 	for pkgname, pkg := range packages {
 		if pkgname != "main" {
 			// start the list
-			fmt.Printf("%s.a: ", pkgname)
+			fmt.Printf("%s.a: ", mkRoot(pkgname))
 			// print all the files
 			for _, fname := range *pkg.files {
 				fmt.Printf("%s ", fname)
@@ -117,7 +122,7 @@ func PrintDeps() {
 			for _, pkgname := range pkg.packages {
 				_, ok := packages[pkgname]
 				if ok || *showNeeded {
-					fmt.Printf("%s.a ", pkgname)
+					fmt.Printf("%s.a ", mkRoot(pkgname))
 				}
 			}
 			fmt.Printf("\n")
@@ -151,7 +156,7 @@ func PrintDeps() {
 				for _, pkgname := range main.packages {
 					_, ok := packages[pkgname]
 					if ok || (*showNeeded && !done[pkgname]) {
-						fmt.Printf("%s.a ", pkgname)
+						fmt.Printf("%s.a ", mkRoot(pkgname))
 						done[pkgname] = true
 					}
 				}
