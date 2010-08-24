@@ -17,6 +17,7 @@ import (
 var progName = "goinfo"
 
 var showVersion = opts.LongFlag("version", "display version information")
+var srcRoot = opts.Half("r", "root", "root directory of the source", "", "src")
 
 func main() {
 	// parse and handle options
