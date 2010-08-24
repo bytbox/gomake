@@ -17,6 +17,7 @@ import (
 
 var showVersion = opts.LongFlag("version", "display version information")
 var showNeeded = opts.Flag("n", "need", "display external dependencies")
+var srcRoot = opts.Half("r", "root", "root directory of the source", ".", "src")
 var progName = "godep"
 
 var roots = map[string]string{}
@@ -59,9 +60,11 @@ func main() {
 }
 
 type Package struct {
-	files    *StringVector
-	packages map[string]string
-	hasMain  bool
+	name     string
+	files    *StringVector     // the files in this package
+	packages map[string]string // dependencies
+	hasMain  bool              // is this a main package with a `main` function
+	path     string            // the path to this package
 }
 
 // packages is a mapping of package names (strings) to Package objects
@@ -132,6 +135,7 @@ func PrintDeps() {
 				common.Push(fname)
 			}
 		}
+		// for every application root
 		for _, fname := range *main.files {
 			if app, ok := roots[fname]; ok {
 				// dependencies already displayed
@@ -162,7 +166,11 @@ func HandleFile(fname string, file *ast.File) {
 	if pkg, ok := packages[pkgname]; ok {
 		pkg.files.Push(fname)
 	} else {
-		packages[pkgname] = Package{&StringVector{}, map[string]string{}, false}
+		packages[pkgname] = Package{
+			files:    &StringVector{},
+			packages: map[string]string{},
+			hasMain:  false,
+		}
 		packages[pkgname].files.Push(fname)
 	}
 	ast.Walk(&ImportVisitor{packages[pkgname]}, file)
@@ -183,7 +191,7 @@ func (v ImportVisitor) Visit(node interface{}) ast.Visitor {
 	if spec, ok := node.(*ast.ImportSpec); ok {
 		ppath := path.Clean(strings.Trim(string(spec.Path.Value), "\""))
 		if _, ok = v.pkg.packages[ppath]; !ok {
-			v.pkg.packages[ppath]=ppath
+			v.pkg.packages[ppath] = ppath
 		}
 	}
 	return v

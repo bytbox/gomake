@@ -13,8 +13,8 @@ import (
 var progName = "gorules"
 
 var showVersion = opts.LongFlag("version", "display version information")
-var mainExecName = opts.Single("x","execname",
-	"name to use for executable made from 'main.go'","main")
+var mainExecName = opts.Single("x", "execname",
+	"name to use for executable made from 'main.go'", "main")
 
 func main() {
 	// parse and handle options
@@ -25,7 +25,7 @@ func main() {
 	}
 	PrintAutoNotice()
 	fmt.Print(
-`
+		`
 .go.${O}:
         ${GC} $*.go
 

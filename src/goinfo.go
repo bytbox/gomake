@@ -45,7 +45,7 @@ func main() {
 func PrintFList() {
 	fmt.Printf("GOFILES = ")
 	for _, fname := range files {
-		fmt.Print(fname+" ")
+		fmt.Print(fname + " ")
 	}
 	fmt.Print("\n")
 }
@@ -81,7 +81,7 @@ func GetPackageList() {
 }
 
 type MainCheckVisitor struct {
-	fname string
+	fname   string
 	hasMain bool
 }
 
@@ -98,8 +98,7 @@ func (v *MainCheckVisitor) Visit(node interface{}) ast.Visitor {
 func PrintPList() {
 	fmt.Print("GOPKGS = ")
 	for pname, _ := range packages {
-		fmt.Printf("%s ",pname)
+		fmt.Printf("%s ", pname)
 	}
 	fmt.Print("\n")
 }
-
