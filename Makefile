@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-include ${GOROOT}/src/Make.${GOARCH}
+include ${GOROOT}/src/Make.inc
 
 all: godep gomake gorules goinfo
 
